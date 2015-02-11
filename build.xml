@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="SampleHierarchyConversion" default="run" basedir=".">
+
+	<property environment="env"/>
+	<property name="junit.home" location="${env.JUNIT_HOME}" /> 
+	<property name="java.build.platform" value="jre-1.7" />
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build/${java.build.platform}" />
+	<property name="lib.dir" value="lib" />
+	<property name="program.name" value="org.opentdc.jsonTest.JsonTest" />
+	<property name="jar.file" value="${lib.dir}/testJson.jar" />
+
+	<path id="project.class.path">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${junit.home}" includes="*.jar" />
+	</path>
+	
+	<target name="javac" depends="clean" description="Compile java source">
+		<mkdir dir="${build.dir}"/>
+		<javac includeantruntime="false" srcdir="${src.dir}" includes="**" encoding="utf-8"
+			destdir="${build.dir}"
+			source="1.7" target="1.7" nowarn="true"
+			debug="true" debuglevel="lines,vars,source">
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+	
+	<target name="build" depends="javac" description="Build the jar file">
+		<jar basedir="${build.dir}" destfile="${jar.file}" />
+	</target>
+	
+	<target name="run" depends="build" description="Run this project">
+		<java classname="${program.name}">
+			<classpath refid="project.class.path"/>
+		</java>
+	</target>
+	
+	<target name="clean" description="Cleans this project">
+		<delete dir="${build.dir}" failonerror="false" />
+		<delete file="${jar.file}" failonerror="false" />
+		<delete file="activity.json" failonerror="false" />
+		<delete file="arrayOfString.json" failonerror="false" />
+	</target>
+	
+	<target name="junit" depends="build" description="Run jUnit tests">
+		<junit printsummary="on">
+			<classpath refid="project.class.path" />
+			<formatter type="plain" usefile="false" />
+			<test name="${program.name}" outfile="testResult.txt" />
+		</junit>
+	</target>
+
+</project>
